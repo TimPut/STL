@@ -1,10 +1,10 @@
 module Graphics.Formats.STL (
       textSTL
     , stlParser
-    , STL(..), Triangle(..), Vector
+    , STL(..), Triangle(..)
     )
     where
 
-import Graphics.Formats.STL.Printer (textSTL)
-import Graphics.Formats.STL.Parser (stlParser)
-import Graphics.Formats.STL.Types
+import           Graphics.Formats.STL.Parser  (stlParser)
+import           Graphics.Formats.STL.Printer (textSTL)
+import           Graphics.Formats.STL.Types

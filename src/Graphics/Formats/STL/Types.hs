@@ -4,7 +4,6 @@ module Graphics.Formats.STL.Types
        (
            STL(..),
            Triangle(..),
-           Vector,
            triple,
        ) where
 
@@ -27,8 +26,6 @@ data STL = STL { name      :: Text
 data Triangle = Triangle { normal   :: Maybe (V3 Float)
                          , vertices :: ((V3 Float), (V3 Float), (V3 Float))
                          }
-
-type Vector = (Float, Float, Float)
 
 triple :: a -> a -> a -> (a, a, a)
 triple a b c = (a, b, c)
