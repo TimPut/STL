@@ -2,13 +2,13 @@
 
 module Graphics.Formats.STL.Printer where
 
-import qualified Data.ByteString as BS
+import qualified Data.ByteString              as BS
 import           Data.ByteString.Lazy.Builder
-import           Data.List (intersperse)
+import           Data.List                    (intersperse)
 import           Data.Monoid
-import           Data.Text.Encoding (encodeUtf8)
-
+import           Data.Text.Encoding           (encodeUtf8)
 import           Graphics.Formats.STL.Types
+import           Linear.V3
 
 -- | Convert an @STL@ value to a @Builder@, which can be converted to a
 -- @ByteString@ with 'toLazyByteString'
@@ -29,16 +29,16 @@ triangle (Triangle n (a, b, c)) =
                            ]
          ++ [stringUtf8 "endfacet"]
 
-maybeNormal :: Maybe Vector -> Builder
+maybeNormal :: Maybe (V3 Float) -> Builder
 maybeNormal n = case n of
-    Nothing -> v3 (0,0,0)
+    Nothing -> v3 (V3 0 0 0)
     Just n' -> v3 n'
 
-vertex :: Vector -> Builder
+vertex :: (V3 Float) -> Builder
 vertex v = stringUtf8 "vertex " <> v3 v
 
-v3 :: Vector -> Builder
-v3 (x, y, z) = mconcat $ intersperse space [floatDec x, floatDec y, floatDec z]
+v3 :: (V3 Float) -> Builder
+v3 (V3 x y z) = mconcat $ intersperse space [floatDec x, floatDec y, floatDec z]
   where
     space = charUtf8 ' '
 

@@ -9,23 +9,23 @@ module Graphics.Formats.STL.Types
        ) where
 
 import           Control.Monad
-import qualified Data.ByteString as BS
+import qualified Data.ByteString    as BS
 import           Data.Serialize
-import           Data.Text (Text)
-import qualified Data.Text as T
+import           Data.Text          (Text)
+import qualified Data.Text          as T
 import           Data.Text.Encoding
 import           Data.Word
-
+import           Linear.V3          hiding (triple)
 -- | A representation of an STL file, consisting of a (possibly empty)
 -- object name, and a list of triangles.
-data STL = STL { name :: Text
+data STL = STL { name      :: Text
                , triangles :: [Triangle]
                }
 
 -- | A single triangle in STL is represented by a normal vector and
 -- three vertices.
-data Triangle = Triangle { normal :: Maybe Vector
-                         , vertices :: (Vector, Vector, Vector)
+data Triangle = Triangle { normal   :: Maybe (V3 Float)
+                         , vertices :: ((V3 Float), (V3 Float), (V3 Float))
                          }
 
 type Vector = (Float, Float, Float)
@@ -62,12 +62,12 @@ header n = BS.concat [lib, truncatedName, padding] where
 putFloat :: Float -> Put
 putFloat = putFloat32le
 
-v3 :: Vector -> PutM ()
-v3 (x,y,z) = putFloat x *> putFloat y *> putFloat z
+v3 :: (V3 Float) -> PutM ()
+v3 (V3 x y z) = putFloat x *> putFloat y *> putFloat z
 
-maybeNormal :: Maybe Vector -> PutM ()
+maybeNormal :: Maybe (V3 Float) -> PutM ()
 maybeNormal n = case n of
-    Nothing -> v3 (0,0,0)
+    Nothing -> v3 (V3 0 0 0)
     Just n' -> v3 n'
 
 getHeader :: Get ()
@@ -76,12 +76,12 @@ getHeader = skip 80
 getFloat :: Get Float
 getFloat = getFloat32le
 
-getVector :: Get Vector
-getVector = (,,) <$> getFloat <*> getFloat <*> getFloat
+getVector :: Get (V3 Float)
+getVector = V3 <$> getFloat <*> getFloat <*> getFloat
 
-getNormal :: Get (Maybe Vector)
+getNormal :: Get (Maybe (V3 Float))
 getNormal = do
     v <- getVector
     return $ case v of
-        (0,0,0) -> Nothing
-        n'      -> Just n'
+        (V3 0 0 0) -> Nothing
+        n'         -> Just n'
